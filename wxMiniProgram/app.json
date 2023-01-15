@@ -2,7 +2,10 @@
   "pages": [
     "pages/index/index",
     "pages/logs/logs",
-    "pages/crud/crud"
+    "pages/crud/crud",
+    "pages/db/crud/insert",
+    "pages/db/crud/update",
+    "pages/db/crud/select"
   ],
   "window": {
     "backgroundTextStyle": "light",
