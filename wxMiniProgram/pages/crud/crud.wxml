@@ -1,9 +1,9 @@
 <!--pages/crud/crud.wxml-->
 <view class="container">
   <view>
-    <button bindtap="insertRecord" style="background-color: green; color: white;">增加记录</button>
+    <button bindtap="goToInsertPage" style="background-color: green; color: white;">增加记录</button>
     <button bindtap="deleteRecord" style="background-color: yellowgreen; color: white;">删除记录</button>
-    <button bindtap="updateRecord" style="background-color: orange; color: white;">修改记录</button>
-    <button bindtap="selectRecord" style="background-color: red; color: white;">查询记录</button>
+    <button bindtap="goToUpdatePage" style="background-color: orange; color: white;">修改记录</button>
+    <button bindtap="goToSelectPage" style="background-color: red; color: white;">查询记录</button>
   </view>
 </view>
