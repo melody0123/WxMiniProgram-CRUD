@@ -331,5 +331,15 @@ Page({
     setTimeout(()=>{
       wx.stopPullDownRefresh()
     },1000)
+  },
+  onDeleteTap: function (e) {
+    console.log(e);
+    let id = e.currentTarget.dataset.itemid;
+    console.log("删除：" + id);
+  },
+  onUpdateTap: function (e) {
+    console.log(e);
+    let id = e.currentTarget.dataset.itemid;
+    console.log("修改：" + id);
   }
 })

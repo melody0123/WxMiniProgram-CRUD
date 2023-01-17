@@ -17,9 +17,9 @@
       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
     </block>
   </view>
-  <view class="usermotto">
+  <!-- <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
-  </view>
+  </view> -->
   <view>
     <button bindtap="goToCrud" type="primary">数据库管理</button>
   </view>

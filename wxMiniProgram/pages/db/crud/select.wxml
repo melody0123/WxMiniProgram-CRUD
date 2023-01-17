@@ -41,7 +41,8 @@
 				<view class="service-text">
 					<view class="service-tite">{{item.name}}</view>
 					<view class="service-tags">
-						<text>{{item.tag}}</text>
+						<text bindtap="onDeleteTap" data-itemid="{{item.id}}">删除</text>
+            <text bindtap="onUpdateTap" data-itemid="{{item.id}}">修改</text>
 					</view>
 					<text class="service-city">服务城市：{{item.city}}</text>
 				</view>
