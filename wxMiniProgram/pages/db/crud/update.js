@@ -1,6 +1,10 @@
 import util from '../../../utils/util.js';
+let app = getApp();
 Page({
   data: {
+    id: null,
+    deviceId: "",
+    deviceName: "",
     showtab:0,  //顶部选项卡索引
     showtabtype:'', //选中类型
     showfootertab:0,  //底部标签页索引
@@ -11,8 +15,10 @@ Page({
     uploadimgs:[], //上传图片列表
     editable: false //是否可编辑
   },
-  onLoad: function () {
+  onLoad: function (options) {
+    console.log(options.id);
     this.setData({
+      id: options.id,
       tabnav:{
         tabnum:5,
         tabitem:[
@@ -45,58 +51,63 @@ Page({
       },
       uploadimgs:[]
     })
+    this.getRecordById(this.data.id);
     this.fetchQuestions();
   },
-  chooseImage:function() {
-    let _this = this;
-    wx.showActionSheet({
-      itemList: ['从相册中选择', '拍照'],
-      itemColor: "#f7982a",
+  getDeviceName: function (e) {
+    this.setData({
+      deviceName: e.detail.value
+    });
+  },
+  getDeviceId: function (e) {
+    this.setData({
+      deviceId: e.detail.value
+    });
+  },
+  getRecordById: function (id) {
+    let that = this;
+    let sql = "select * from `device_file` where `id`=" + id;
+    wx.request({
+      url: app.globalData.baseUrl + '/device_file_servlet_action',
+      data: {
+        'action': 'query_record',
+        'sql': sql
+      },
+      header: {
+        "content-type":"application/x-www-form-urlencoded",
+        "x-requested-with": "XMLHttpRequest"
+      },
       success: function(res) {
-        if (!res.cancel) {
-          if(res.tapIndex == 0){
-            _this.chooseWxImage('album')
-          }else if(res.tapIndex == 1){
-            _this.chooseWxImage('camera')
-          }
-        }
+        console.log(res.data);
+        that.setData({
+          deviceId: res.data.aaData[0].device_id,
+          deviceName: res.data.aaData[0].device_name
+        });
       }
     })
   },
-  chooseWxImage:function(type){
-    let _this = this;
-    wx.chooseImage({
-      sizeType: ['original', 'compressed'],
-      sourceType: [type],
-      success: function (res) {
-        _this.setData({
-          uploadimgs: _this.data.uploadimgs.concat(res.tempFilePaths)
-        })
+  updateSubmit: function(e) {
+    let id = this.data.id;
+    let deviceId = this.data.deviceId;
+    let deviceName = this.data.deviceName;
+    let sql = "update `device_file` set `device_name`='" + deviceName + "', `device_id`='" + deviceId + "' where `id`=" + id;
+    wx.request({
+      url: app.globalData.baseUrl + '/device_file_servlet_action',
+      data: {
+        'action': 'update_record',
+        'sql': sql
+      },
+      header: {
+        "content-type":"application/x-www-form-urlencoded",
+        "x-requested-with": "XMLHttpRequest"
+      },
+      success: function(res) {
+        console.log(res.data);
+        wx.navigateTo({
+          url: '/pages/db/crud/select',
+        });
       }
     })
-  },
-  editImage:function(){
-    this.setData({
-      editable: !this.data.editable
-    })
-  },
-  deleteImg:function(e){
-    console.log(e.currentTarget.dataset.index);
-    const imgs = this.data.uploadimgs
-    // Array.prototype.remove = function(i){
-    //   const l = this.length;
-    //   if(l==1){
-    //     return []
-    //   }else if(i>1){
-    //     return [].concat(this.splice(0,i),this.splice(i+1,l-1))
-    //   }
-    // }
-    this.setData({
-      uploadimgs: imgs.remove(e.currentTarget.dataset.index)
-    })
-  },
-  questionSubmit:function(){
-
   },
   fetchQuestions:function(){  //获取问题列表
     const newquestions = [];

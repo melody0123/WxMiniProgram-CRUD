@@ -1,3 +1,4 @@
+let app = getApp();
 Page({
   data: {
     showsearch:false,   //显示搜索按钮
@@ -18,8 +19,61 @@ Page({
     page: 0  //分页
   },
   onLoad: function () { //加载数据渲染页面
-    this.fetchServiceData();
+    // this.fetchServiceData();
     this.fetchFilterData();
+    this.onRecordSelectTap();
+  },
+  onRecordSelectTap: function(e) {
+    let that = this;
+    let sql = "select * from `device_file` order by `create_time`"
+    wx.request({
+      url: app.globalData.baseUrl + '/device_file_servlet_action',
+      data: {
+        'action': 'query_record',
+        'sql': sql
+      },
+      header: {
+        "content-type":"application/x-www-form-urlencoded",
+        "x-requested-with": "XMLHttpRequest"
+      },
+      success: function(res) {
+        console.log(res.data);
+        that.handleData(res.data);
+      }
+    })
+  },
+  handleData: function(data) {
+    let _this = this;
+    wx.showToast({
+      title: '加载中',
+      icon: 'loading'
+    })
+    const perpage = 10;
+    this.setData({
+      page:this.data.page+1
+    })
+    const page = this.data.page;
+    const newlist = [];
+    for (var i = 0; i < data.aaData.length; i++) {
+      let id = data.aaData[i].id;
+      let deviceId = data.aaData[i].device_id;
+      let deviceName = data.aaData[i].device_name;
+      let deviceType = data.aaData[i].device_type;
+      let createTime = data.aaData[i].create_time;
+      newlist.push({
+        "id":id,
+        "name":deviceId,
+        "city":deviceName,
+        "type":deviceType,
+        "tag":createTime,
+        "imgurl":"http://img.mukewang.com/57fdecf80001fb0406000338-240-135.jpg"
+      })
+    }
+    setTimeout(()=>{
+      _this.setData({
+        servicelist:_this.data.servicelist.concat(newlist)
+      })
+    },1500)
   },
   fetchFilterData:function(){ //获取筛选条件
     this.setData({
@@ -336,10 +390,33 @@ Page({
     console.log(e);
     let id = e.currentTarget.dataset.itemid;
     console.log("删除：" + id);
+    this.deleteRecord(id);
+  },
+  deleteRecord: function (id) {
+    let that = this;
+    let sql = "delete from `device_file` where id=" + id;
+    wx.request({
+      url: app.globalData.baseUrl + '/device_file_servlet_action',
+      data: {
+        'action': 'update_record',
+        'sql': sql
+      },
+      header: {
+        "content-type":"application/x-www-form-urlencoded",
+        "x-requested-with": "XMLHttpRequest"
+      },
+      success: function(res) {
+        console.log(res.data);
+        that.onLoad();
+      }
+    });
   },
   onUpdateTap: function (e) {
     console.log(e);
     let id = e.currentTarget.dataset.itemid;
     console.log("修改：" + id);
+    wx.navigateTo({
+      url: '/pages/db/crud/update?id=' + id,
+    });
   }
 })
